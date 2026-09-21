@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: dewecs-mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: dewecs
+    volumes:
+      - mongo-data:/data/db
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: dewecs-backend
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      PORT: 5000
+      MONGO_URI: mongodb://mongo:27017/dewecs
+      NODE_ENV: development
+    depends_on:
+      - mongo
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: dewecs-frontend
+    restart: always
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_BASE_URL: http://localhost:5000/api
+    depends_on:
+      - backend
+
+volumes:
+  mongo-data:
