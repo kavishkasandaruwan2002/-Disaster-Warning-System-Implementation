@@ -19,7 +19,6 @@ The system uses a single combined Node.js/Express backend and a single React/Vit
 dewecs-se3070-g18/
 ├── README.md
 ├── .gitignore
-├── docker-compose.yml
 ├── report/
 │   ├── use-case-diagram/
 │   ├── class-diagram/
@@ -28,7 +27,6 @@ dewecs-se3070-g18/
 │   ├── package.json
 │   ├── .env.example
 │   ├── jest.config.js
-│   ├── Dockerfile
 │   └── src/
 │       ├── config/
 │       ├── shared/
@@ -43,7 +41,6 @@ dewecs-se3070-g18/
     ├── package.json
     ├── .env.example
     ├── vite.config.js
-    ├── Dockerfile
     └── src/
         ├── shared/
         ├── router/
@@ -58,15 +55,7 @@ dewecs-se3070-g18/
 
 ## Running the Application
 
-### Option 1: Docker Compose (Recommended)
-```bash
-docker-compose up --build
-```
-- Frontend: `http://localhost:5173`
-- Backend API: `http://localhost:5000/api`
-- MongoDB: `mongodb://localhost:27017/dewecs`
-
-### Option 2: Independent Local Execution
+### Local Execution
 
 #### Backend
 ```bash
