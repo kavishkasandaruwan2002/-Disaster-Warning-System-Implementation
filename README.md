@@ -1,4 +1,4 @@
-# DEWECS - SE3070 Assignment 02 (Group 18)
+# DEWECS - SE3070 Assignment 02 
 
 ## System Overview
 **DEWECS (Disaster Early Warning and Emergency Coordination System)** is a unified, modular MERN-stack application designed to handle real-time disaster reporting, location-specific hazard warnings, emergency resource allocation, and post-event analysis.
