@@ -1,39 +1,41 @@
-const analysisService = require('./analysis-report.service');
+const analysisReportService = require('./analysis-report.service');
 const apiResponse = require('../../shared/utils/apiResponse');
 
-const generateReport = async (req, res, next) => {
+exports.generateReport = async (req, res, next) => {
   try {
-    // TODO: Main Flow - Generate post-event analysis report
-    const report = await analysisService.generateReport(req.body);
-    return apiResponse.success(res, 'Post-event analysis report generated successfully', report, 201);
+    const result = await analysisReportService.generateReport(req.body);
+    const msg = result.noActivity
+      ? 'No activity recorded in selected period. Created report with zero counts.'
+      : 'Post-event analysis report generated successfully';
+    return apiResponse.success(res, msg, result, 201);
   } catch (error) {
     next(error);
   }
 };
 
-const getReports = async (req, res, next) => {
+exports.getReports = async (req, res, next) => {
   try {
-    const reports = await analysisService.getAllReports();
+    const reports = await analysisReportService.getReports();
     return apiResponse.success(res, 'Analysis reports retrieved successfully', reports);
   } catch (error) {
     next(error);
   }
 };
 
-const getReportById = async (req, res, next) => {
+exports.getReportById = async (req, res, next) => {
   try {
-    const report = await analysisService.getReportById(req.params.id);
-    if (!report) {
-      return apiResponse.error(res, 'Analysis report not found', 404);
-    }
-    return apiResponse.success(res, 'Analysis report details retrieved successfully', report);
+    const reportData = await analysisReportService.getReportById(req.params.id);
+    return apiResponse.success(res, 'Analysis report details retrieved', reportData);
   } catch (error) {
     next(error);
   }
 };
 
-module.exports = {
-  generateReport,
-  getReports,
-  getReportById
+exports.shareReport = async (req, res, next) => {
+  try {
+    const result = await analysisReportService.shareReport(req.params.id, req.body);
+    return apiResponse.success(res, result.message, result);
+  } catch (error) {
+    next(error);
+  }
 };

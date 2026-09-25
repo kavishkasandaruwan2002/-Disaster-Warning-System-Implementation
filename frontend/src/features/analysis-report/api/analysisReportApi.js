@@ -1,22 +1,29 @@
-import axiosClient from '../../../shared/utils/axiosClient';
+const API_BASE = '/api/analysis-reports';
 
-/**
- * Analysis Report Feature API Call Placeholders
- * 
- * TODO: Main Flow - Generate post-event analysis report.
- * TODO: Alternate Flow - Fetch generated report summaries and analytics.
- */
-export const getAnalysisReports = async () => {
-  const response = await axiosClient.get('/analysis-reports');
-  return response.data;
+export const generateReport = async (data) => {
+  const res = await fetch(`${API_BASE}/generate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  return res.json();
 };
 
-export const getAnalysisReportById = async (id) => {
-  const response = await axiosClient.get(`/analysis-reports/${id}`);
-  return response.data;
+export const getReports = async () => {
+  const res = await fetch(API_BASE);
+  return res.json();
 };
 
-export const generateAnalysisReport = async (reportData) => {
-  const response = await axiosClient.post('/analysis-reports', reportData);
-  return response.data;
+export const getReportById = async (id) => {
+  const res = await fetch(`${API_BASE}/${id}`);
+  return res.json();
+};
+
+export const shareReport = async (id, orgIds) => {
+  const res = await fetch(`${API_BASE}/${id}/share`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ orgIds })
+  });
+  return res.json();
 };

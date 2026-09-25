@@ -8,6 +8,7 @@ const groundReportRoutes = require('./modules/ground-report/ground-report.routes
 const hazardWarningRoutes = require('./modules/hazard-warning/hazard-warning.routes');
 const resourceCoordinationRoutes = require('./modules/resource-coordination/resource-coordination.routes');
 const analysisReportRoutes = require('./modules/analysis-report/analysis-report.routes');
+const commonRoutes = require('./shared/routes/common.routes');
 
 const app = express();
 
@@ -23,11 +24,15 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Shared Common Meta Routes
+app.use('/api', commonRoutes);
+
 // Feature Module Routes
 app.use('/api/ground-reports', groundReportRoutes);
+app.use('/api/hazard-alerts', hazardWarningRoutes);
 app.use('/api/hazard-warnings', hazardWarningRoutes);
-app.use('/api/resource-coordinations', resourceCoordinationRoutes);
 app.use('/api/analysis-reports', analysisReportRoutes);
+app.use('/api', resourceCoordinationRoutes);
 
 // Shared Error Middlewares
 app.use(notFound);

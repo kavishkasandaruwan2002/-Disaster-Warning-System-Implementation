@@ -1,44 +1,69 @@
 const groundReportService = require('./ground-report.service');
 const apiResponse = require('../../shared/utils/apiResponse');
 
-/**
- * Controller for Submit and Verify Ground Hazard Report
- */
-const createReport = async (req, res, next) => {
+exports.submitReport = async (req, res, next) => {
   try {
-    // TODO: Main Flow - Create ground hazard report
-    const report = await groundReportService.submitReport(req.body);
-    return apiResponse.success(res, 'Ground hazard report submitted successfully', report, 201);
+    const result = await groundReportService.submitReport(req.body);
+    const msg = result.isCorroborating
+      ? `Report submitted and linked as corroborating report to ${result.corroboratesWith}`
+      : 'Ground hazard report submitted successfully';
+    return apiResponse.success(res, msg, result, 201);
   } catch (error) {
     next(error);
   }
 };
 
-const getReports = async (req, res, next) => {
+exports.getReports = async (req, res, next) => {
   try {
-    const reports = await groundReportService.getAllReports();
-    return apiResponse.success(res, 'Ground hazard reports retrieved successfully', reports);
+    const { district, status } = req.query;
+    const reports = await groundReportService.getReports({ district, status });
+    return apiResponse.success(res, 'Ground reports retrieved successfully', reports);
   } catch (error) {
     next(error);
   }
 };
 
-const verifyReport = async (req, res, next) => {
+exports.getReportById = async (req, res, next) => {
   try {
-    // TODO: Alternate Flow - Verify ground hazard report
-    const { status } = req.body;
-    const report = await groundReportService.verifyReport(req.params.id, status);
-    if (!report) {
-      return apiResponse.error(res, 'Ground report not found', 404);
-    }
-    return apiResponse.success(res, 'Report status updated successfully', report);
+    const report = await groundReportService.getReportById(req.params.id);
+    return apiResponse.success(res, 'Ground report details retrieved successfully', report);
   } catch (error) {
     next(error);
   }
 };
 
-module.exports = {
-  createReport,
-  getReports,
-  verifyReport
+exports.verifyReport = async (req, res, next) => {
+  try {
+    const updatedReport = await groundReportService.verifyReport(req.params.id, req.body);
+    return apiResponse.success(res, 'Ground report verified successfully', updatedReport);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.rejectReport = async (req, res, next) => {
+  try {
+    const updatedReport = await groundReportService.rejectReport(req.params.id, req.body);
+    return apiResponse.success(res, 'Ground report rejected', updatedReport);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.requestInfo = async (req, res, next) => {
+  try {
+    const updatedReport = await groundReportService.requestInfo(req.params.id);
+    return apiResponse.success(res, 'Requested more information for report', updatedReport);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.addEvidence = async (req, res, next) => {
+  try {
+    const updatedReport = await groundReportService.addEvidence(req.params.id, req.body);
+    return apiResponse.success(res, 'Evidence added and report reset to PENDING', updatedReport);
+  } catch (error) {
+    next(error);
+  }
 };

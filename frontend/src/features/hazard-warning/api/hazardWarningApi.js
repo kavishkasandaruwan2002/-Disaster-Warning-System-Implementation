@@ -1,22 +1,47 @@
-import axiosClient from '../../../shared/utils/axiosClient';
+const API_BASE = '/api/hazard-alerts';
 
-/**
- * Hazard Warning Feature API Call Placeholders
- * 
- * TODO: Main Flow - Issue location-specific hazard warning.
- * TODO: Alternate Flow - Revoke active warning.
- */
-export const getActiveWarnings = async () => {
-  const response = await axiosClient.get('/hazard-warnings');
-  return response.data;
+export const previewReach = async (data) => {
+  const res = await fetch(`${API_BASE}/preview`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  return res.json();
 };
 
-export const issueHazardWarning = async (warningData) => {
-  const response = await axiosClient.post('/hazard-warnings', warningData);
-  return response.data;
+export const issueWarning = async (data) => {
+  const res = await fetch(API_BASE, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  return res.json();
 };
 
-export const revokeHazardWarning = async (id) => {
-  const response = await axiosClient.patch(`/hazard-warnings/${id}/revoke`);
-  return response.data;
+export const getActiveWarnings = async (status = '') => {
+  const query = status ? `?status=${status}` : '';
+  const res = await fetch(`${API_BASE}${query}`);
+  return res.json();
+};
+
+export const escalateWarning = async (id, newSeverityLevel) => {
+  const res = await fetch(`${API_BASE}/${id}/escalate`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ newSeverityLevel })
+  });
+  return res.json();
+};
+
+export const cancelWarning = async (id) => {
+  const res = await fetch(`${API_BASE}/${id}/cancel`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' }
+  });
+  return res.json();
+};
+
+export const getNotificationStats = async (id) => {
+  const res = await fetch(`${API_BASE}/${id}/notifications`);
+  return res.json();
 };

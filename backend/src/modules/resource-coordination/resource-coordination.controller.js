@@ -1,39 +1,67 @@
-const resourceService = require('./resource-coordination.service');
+const resourceCoordinationService = require('./resource-coordination.service');
 const apiResponse = require('../../shared/utils/apiResponse');
 
-const addResource = async (req, res, next) => {
+exports.getResourceDashboard = async (req, res, next) => {
   try {
-    const resource = await resourceService.addResource(req.body);
-    return apiResponse.success(res, 'Resource added successfully', resource, 201);
+    const dashboard = await resourceCoordinationService.getResourceDashboard(req.params.districtId);
+    return apiResponse.success(res, 'Resource dashboard aggregated successfully', dashboard);
   } catch (error) {
     next(error);
   }
 };
 
-const getResources = async (req, res, next) => {
+exports.registerShelter = async (req, res, next) => {
   try {
-    const resources = await resourceService.getAllResources();
-    return apiResponse.success(res, 'Resources retrieved successfully', resources);
+    const shelter = await resourceCoordinationService.registerShelter(req.body);
+    return apiResponse.success(res, 'Shelter registered successfully', shelter, 201);
   } catch (error) {
     next(error);
   }
 };
 
-const dispatchResource = async (req, res, next) => {
+exports.updateShelterOccupancy = async (req, res, next) => {
   try {
-    // TODO: Main Flow - Dispatch emergency resource to location
-    const resource = await resourceService.dispatchResource(req.params.id, req.body.assignedLocation);
-    if (!resource) {
-      return apiResponse.error(res, 'Resource not found', 404);
-    }
-    return apiResponse.success(res, 'Resource dispatched successfully', resource);
+    const { newOccupancy } = req.body;
+    const shelter = await resourceCoordinationService.updateShelterOccupancy(req.params.id, newOccupancy);
+    return apiResponse.success(res, 'Shelter occupancy updated', shelter);
   } catch (error) {
     next(error);
   }
 };
 
-module.exports = {
-  addResource,
-  getResources,
-  dispatchResource
+exports.getRescueTeams = async (req, res, next) => {
+  try {
+    const { district, status } = req.query;
+    const teams = await resourceCoordinationService.getRescueTeams(district, status);
+    return apiResponse.success(res, 'Rescue teams retrieved successfully', teams);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.dispatchRescueTeam = async (req, res, next) => {
+  try {
+    const team = await resourceCoordinationService.dispatchRescueTeam(req.params.id, req.body);
+    return apiResponse.success(res, 'Rescue team dispatched successfully', team);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.returnRescueTeam = async (req, res, next) => {
+  try {
+    const team = await resourceCoordinationService.returnRescueTeam(req.params.id);
+    return apiResponse.success(res, 'Rescue team status updated', team);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.distributeReliefSupply = async (req, res, next) => {
+  try {
+    const result = await resourceCoordinationService.distributeReliefSupply(req.body);
+    return apiResponse.success(res, 'Relief supply distribution logged successfully', result);
+  } catch (error) {
+    next(error);
+  }
 };
