@@ -1,40 +1,66 @@
 const hazardWarningService = require('./hazard-warning.service');
 const apiResponse = require('../../shared/utils/apiResponse');
 
-const createWarning = async (req, res, next) => {
+exports.previewReach = async (req, res, next) => {
   try {
-    // TODO: Main Flow - Issue new hazard warning
-    const warning = await hazardWarningService.issueWarning(req.body);
-    return apiResponse.success(res, 'Hazard warning issued successfully', warning, 201);
+    const preview = await hazardWarningService.previewReach(req.body);
+    return apiResponse.success(res, 'Estimated reach calculated', preview);
   } catch (error) {
     next(error);
   }
 };
 
-const getWarnings = async (req, res, next) => {
+exports.issueWarning = async (req, res, next) => {
   try {
-    const warnings = await hazardWarningService.getActiveWarnings();
-    return apiResponse.success(res, 'Active warnings retrieved successfully', warnings);
+    const result = await hazardWarningService.issueWarning(req.body);
+    return apiResponse.success(res, 'Hazard alert created and broadcast issued', result, 201);
   } catch (error) {
     next(error);
   }
 };
 
-const revokeWarning = async (req, res, next) => {
+exports.getActiveWarnings = async (req, res, next) => {
   try {
-    // TODO: Alternate Flow - Revoke active warning
-    const warning = await hazardWarningService.revokeWarning(req.params.id);
-    if (!warning) {
-      return apiResponse.error(res, 'Hazard warning not found', 404);
-    }
-    return apiResponse.success(res, 'Hazard warning revoked successfully', warning);
+    const { status } = req.query;
+    const warnings = await hazardWarningService.getActiveWarnings(status);
+    return apiResponse.success(res, 'Hazard warnings retrieved successfully', warnings);
   } catch (error) {
     next(error);
   }
 };
 
-module.exports = {
-  createWarning,
-  getWarnings,
-  revokeWarning
+exports.getWarningById = async (req, res, next) => {
+  try {
+    const warning = await hazardWarningService.getWarningById(req.params.id);
+    return apiResponse.success(res, 'Hazard warning retrieved successfully', warning);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.escalateWarning = async (req, res, next) => {
+  try {
+    const result = await hazardWarningService.escalateWarning(req.params.id, req.body);
+    return apiResponse.success(res, 'Hazard warning escalated successfully', result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.cancelWarning = async (req, res, next) => {
+  try {
+    const updated = await hazardWarningService.cancelWarning(req.params.id);
+    return apiResponse.success(res, 'Hazard warning cancelled successfully', updated);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getNotificationStats = async (req, res, next) => {
+  try {
+    const stats = await hazardWarningService.getNotificationStats(req.params.id);
+    return apiResponse.success(res, 'Notification delivery statistics retrieved', stats);
+  } catch (error) {
+    next(error);
+  }
 };

@@ -1,11 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('./resource-coordination.controller');
-const { addResourceValidation } = require('./resource-coordination.validation');
-const validateRequest = require('../../shared/middleware/validateRequest');
 
-router.post('/', addResourceValidation, validateRequest, controller.addResource);
-router.get('/', controller.getResources);
-router.patch('/:id/dispatch', controller.dispatchResource);
+// Resource Dashboard route
+router.get('/resource-dashboard/:districtId', controller.getResourceDashboard);
+
+// Shelter routes
+router.post('/shelters', controller.registerShelter);
+router.patch('/shelters/:id/occupancy', controller.updateShelterOccupancy);
+
+// Rescue Team routes
+router.get('/rescue-teams', controller.getRescueTeams);
+router.patch('/rescue-teams/:id/dispatch', controller.dispatchRescueTeam);
+router.patch('/rescue-teams/:id/return', controller.returnRescueTeam);
+
+// Relief Supply routes
+router.post('/relief-supplies/distribute', controller.distributeReliefSupply);
 
 module.exports = router;

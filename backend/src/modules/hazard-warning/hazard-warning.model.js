@@ -1,38 +1,45 @@
 const mongoose = require('mongoose');
 
-/**
- * Hazard Warning Schema - Use Case: Issue Location-Specific Hazard Warning
- * 
- * TODO: Main Flow - Disaster manager issues warning for specific geographic region.
- * TODO: Alternate Flow - Update active warning level or expand affected radius.
- * TODO: Exception Flow - Expired or conflicting warning area detection.
- */
-const hazardWarningSchema = new mongoose.Schema(
+const hazardAlertSchema = new mongoose.Schema(
   {
-    title: {
+    alertId: {
       type: String,
-      required: true
+      required: true,
+      unique: true
     },
     hazardType: {
       type: String,
+      enum: ['Flood', 'Landslide', 'Cyclone', 'Drought'],
       required: true
     },
-    targetRegion: {
-      name: { type: String, required: true },
-      coordinates: [{ latitude: Number, longitude: Number }]
-    },
-    warningLevel: {
+    severityLevel: {
       type: String,
-      enum: ['ADVISORY', 'WATCH', 'WARNING', 'EVACUATE'],
-      default: 'ADVISORY'
+      enum: ['Advisory', 'Watch', 'Warning', 'Emergency'],
+      required: true
     },
-    issuedBy: {
+    targetDistrictIds: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'District'
+      }
+    ],
+    targetRiverBasinId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'RiverBasin',
+      default: null
+    },
+    message: {
       type: String,
       required: true
     },
-    active: {
-      type: Boolean,
-      default: true
+    issuedTime: {
+      type: Date,
+      default: Date.now
+    },
+    status: {
+      type: String,
+      enum: ['ACTIVE', 'ESCALATED', 'CANCELLED', 'EXPIRED'],
+      default: 'ACTIVE'
     }
   },
   {
@@ -40,4 +47,4 @@ const hazardWarningSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model('HazardWarning', hazardWarningSchema);
+module.exports = mongoose.model('HazardAlert', hazardAlertSchema);

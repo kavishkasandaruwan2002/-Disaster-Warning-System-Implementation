@@ -1,11 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('./hazard-warning.controller');
-const { createWarningValidation } = require('./hazard-warning.validation');
-const validateRequest = require('../../shared/middleware/validateRequest');
+const hazardWarningController = require('./hazard-warning.controller');
 
-router.post('/', createWarningValidation, validateRequest, controller.createWarning);
-router.get('/', controller.getWarnings);
-router.patch('/:id/revoke', controller.revokeWarning);
+router.post('/preview', hazardWarningController.previewReach);
+router.post('/', hazardWarningController.issueWarning);
+router.get('/', hazardWarningController.getActiveWarnings);
+router.get('/:id', hazardWarningController.getWarningById);
+router.patch('/:id/escalate', hazardWarningController.escalateWarning);
+router.patch('/:id/cancel', hazardWarningController.cancelWarning);
+router.get('/:id/notifications', hazardWarningController.getNotificationStats);
 
 module.exports = router;

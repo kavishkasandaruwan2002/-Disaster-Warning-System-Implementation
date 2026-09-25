@@ -1,42 +1,80 @@
 const mongoose = require('mongoose');
 
-/**
- * Ground Report Schema - Use Case: Submit and Verify Ground Hazard Report
- * 
- * TODO: Main Flow - Citizens submit reports with location, description, severity, and media.
- * TODO: Alternate Flow - Verification officers review and mark report as verified.
- * TODO: Exception Flow - Invalid input handling, duplicate report rejection.
- */
 const groundReportSchema = new mongoose.Schema(
   {
-    title: {
+    reportId: {
       type: String,
       required: true,
-      trim: true
+      unique: true
+    },
+    hazardType: {
+      type: String,
+      enum: ['Flood', 'Landslide', 'Cyclone', 'Drought', 'Other'],
+      required: true
     },
     description: {
       type: String,
       required: true
     },
-    location: {
-      latitude: { type: Number, required: true },
-      longitude: { type: Number, required: true },
-      address: { type: String }
-    },
-    severity: {
+    photoUrl: {
       type: String,
-      enum: ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'],
-      default: 'MEDIUM'
+      default: ''
     },
-    status: {
+    gpsLat: {
+      type: Number,
+      required: true
+    },
+    gpsLng: {
+      type: Number,
+      required: true
+    },
+    submittedTime: {
+      type: Date,
+      default: Date.now
+    },
+    submittedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Citizen',
+      required: false
+    },
+    districtId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'District',
+      required: true
+    },
+    verificationStatus: {
       type: String,
-      enum: ['PENDING', 'VERIFIED', 'REJECTED'],
+      enum: ['PENDING', 'VERIFIED', 'REJECTED', 'NEEDS_MORE_INFO'],
       default: 'PENDING'
     },
-    reportedBy: {
+    verifiedBy: {
       type: String,
-      required: true
-    }
+      default: ''
+    },
+    verifiedTime: {
+      type: Date
+    },
+    severityLevel: {
+      type: String,
+      enum: ['LOW', 'HIGH']
+    },
+    rejectionReason: {
+      type: String,
+      default: ''
+    },
+    corroboratingReportIds: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'GroundReport'
+      }
+    ],
+    evidenceHistory: [
+      {
+        photoUrl: String,
+        comment: String,
+        timestamp: { type: Date, default: Date.now }
+      }
+    ]
   },
   {
     timestamps: true

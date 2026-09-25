@@ -1,50 +1,55 @@
 const mongoose = require('mongoose');
 
-/**
- * Post-Event Analysis Report Schema - Use Case: Generate Post-Event Analysis Report
- * 
- * TODO: Main Flow - Aggregate disaster metrics, damage assessments, and response times.
- * TODO: Alternate Flow - Export post-event summary as PDF or analytics dataset.
- * TODO: Exception Flow - Incomplete data warning when generating early reports.
- */
 const analysisReportSchema = new mongoose.Schema(
   {
-    eventTitle: {
+    reportId: {
       type: String,
-      required: true
+      required: true,
+      unique: true
     },
-    disasterType: {
-      type: String,
-      required: true
+    generatedDate: {
+      type: Date,
+      default: Date.now
     },
-    startDate: {
+    periodFrom: {
       type: Date,
       required: true
     },
-    endDate: {
-      type: Date
-    },
-    affectedArea: {
-      type: String,
+    periodTo: {
+      type: Date,
       required: true
     },
-    totalCasualties: {
+    districtFilter: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'District',
+      default: null
+    },
+    hazardTypeFilter: {
+      type: String,
+      default: ''
+    },
+    citizensReachedCount: {
       type: Number,
       default: 0
     },
-    estimatedDamageUSD: {
+    alertsIssuedCount: {
       type: Number,
       default: 0
     },
-    summaryMetrics: {
-      totalReports: Number,
-      warningsIssued: Number,
-      resourcesDispatched: Number
+    reportsVerifiedCount: {
+      type: Number,
+      default: 0
     },
-    author: {
-      type: String,
-      required: true
-    }
+    sheltersActivatedCount: {
+      type: Number,
+      default: 0
+    },
+    sharedWithOrgIds: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Organisation'
+      }
+    ]
   },
   {
     timestamps: true
